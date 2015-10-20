@@ -12,8 +12,20 @@
 
 jQuery.noConflict();
 (function ($) {
+
+    $.holdReady(true);
+    var refreshIntervalId = setInterval(function () {
+        if (
+            $('.navigation-link[href="/games"] .navigation-item-label').html().length > 0
+            && $('.content .level').last().find('.puzzle-name').last().html().length > 0
+        ) {
+            clearInterval(refreshIntervalId);
+            $.holdReady(false);
+        }
+    }, 100);
+
     /* site.ready() */
-    $(window).load(function () {
+    $(document).ready(function () {
         $('.navigation-link[href="/games"]').on('click', function () {
             runScript();
         });
@@ -27,7 +39,7 @@ jQuery.noConflict();
         var refreshIntervalId = setInterval(function () {
             if (
                 window.location.pathname == '/games/puzzles'
-                && $('.content .level').last().find('.puzzle-name').last().html() == 'Mars Lander - Level 3'
+                && $('.content .level').last().find('.puzzle-name').last().html().length > 0
             ) {
                 clearInterval(refreshIntervalId);
                 script();
