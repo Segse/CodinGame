@@ -10,15 +10,20 @@
 // @require     https://ajax.googleapis.com/ajax/libs/jquery/2.1.4/jquery.min.js
 // ==/UserScript==
 
+var localStorageKey = 'CodinGame';
+
 /* site.ready() */
-$(window).load(function () {
-    $('.navigation-link[href="/games"]').on('click', function () {
-        runScript();
-    });
-    if (window.location.pathname == '/games/puzzles') {
-        runScript();
-    }
+//$(window).load(function () {
+$('.navigation-link[href="/games"]').on('click', function () {
+    runScript();
 });
+if (window.location.pathname == '/games/puzzles') {
+    runScript();
+}
+if (window.location.pathname.split('/') [1] == 'report') {
+    storeReportLink();
+}
+//});
 
 /* wait for content */
 function runScript() {
@@ -35,6 +40,17 @@ function runScript() {
 
 /* improve usability */
 function script() {
+    alert('fu');
+    /* add last report button */
+    $('.puzzle-name').each(function () {
+        var url = getLocalStorage(localStorageKey).report[$(this).html()];
+        if (url != undefined) {
+            $(this).parent().parent().find('.puzzle-buttons').append('<button type="button" class="puzzle-details-button">MY LAST REPORT</button>').on('click', function () {
+                window.location.href = url;
+            });
+        }
+    });
+
     var quantityPuzzleToShow = 5;
     var collapseSymbol = '-';
     var expandSymbol = '+';
@@ -102,4 +118,35 @@ function script() {
             }
         }
     });
+}
+
+function storeReportLink() {
+    var refreshIntervalId = setInterval(function () {
+        if ($('.achievement-name').length > 0) {
+            clearInterval(refreshIntervalId);
+
+            var CodinGame = getLocalStorage(localStorageKey);
+            $('.achievement-name').each(function () {
+                var puzzle_name = $(this).html().split('% ');
+                if (puzzle_name.length == 2) {
+                    CodinGame.report[puzzle_name[1]] = window.location.href;
+                    localStorage.setItem(localStorageKey, JSON.stringify(CodinGame));
+                    return false;
+                }
+            });
+        }
+    }, 100);
+}
+
+function getLocalStorage(key) {
+    var CodinGame = localStorage.getItem(key);
+    if (CodinGame == null) {
+        CodinGame = {
+            report: {}
+        };
+    }
+    else {
+        CodinGame = JSON.parse(CodinGame);
+    }
+    return CodinGame;
 }
