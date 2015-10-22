@@ -149,4 +149,4 @@ function getLocalStorage(key) {
         CodinGame = JSON.parse(CodinGame);
     }
     return CodinGame;
-}
+} 
