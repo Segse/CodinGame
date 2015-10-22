@@ -10,29 +10,54 @@
 // @require     https://ajax.googleapis.com/ajax/libs/jquery/2.1.4/jquery.min.js
 // ==/UserScript==
 
+/* closed namespace */
 jQuery.noConflict();
 (function ($) {
-    /* site.ready() */
-    $(window).load(function () {
+
+    /* wait for document ready and elements to modify are loaded */
+    $.holdReady(true);
+    delay(isCodinGameLoaded, siteIsReady);
+    $(document).ready(function () {
         $('.navigation-link[href="/games"]').on('click', function () {
-            runScript();
+            delay(isSitePuzzleLoaded, script);
         });
         if (window.location.pathname == '/games/puzzles') {
-            runScript();
+            delay(isSitePuzzleLoaded, script);
         }
     });
 
-    /* wait for content */
-    function runScript() {
+    /* delay controller */
+    function delay(cond, func) {
         var refreshIntervalId = setInterval(function () {
-            if (
-                window.location.pathname == '/games/puzzles'
-                && $('.content .level').last().find('.puzzle-name').last().html() == 'Mars Lander - Level 3'
-            ) {
+            if (cond()) {
                 clearInterval(refreshIntervalId);
-                script();
+                func();
             }
         }, 100);
+    }
+
+    function isCodinGameLoaded() {
+        if (
+            $('.navigation-link[href="/games"] .navigation-item-label').html().length > 0
+            && $('.level').last().find('.puzzle-name').last().html().length > 0
+        ) {
+            return true;
+        }
+        return false;
+    }
+
+    function siteIsReady() {
+        $.holdReady(false);
+    }
+
+    function isSitePuzzleLoaded() {
+        if (
+            window.location.pathname == '/games/puzzles'
+            && $('.level').last().find('.puzzle-name').last().html().length > 0
+        ) {
+            return true;
+        }
+        return false;
     }
 
     /* improve usability */
