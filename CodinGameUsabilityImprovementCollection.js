@@ -10,6 +10,13 @@
 // @require     https://ajax.googleapis.com/ajax/libs/jquery/2.1.4/jquery.min.js
 // ==/UserScript==
 
+/*
+ * @todo better event handling/ register
+ * @todo better storage handling
+ * @todo storage export/import
+ */
+
+/* closed namespace */
 jQuery.noConflict();
 (function ($) {
     /* site.ready() */
