@@ -10,19 +10,32 @@
 // @require     https://ajax.googleapis.com/ajax/libs/jquery/2.1.4/jquery.min.js
 // ==/UserScript==
 
+/* @todo better event handling/ register
+ * better storage handling
+ */
+
 /* closed namespace */
 jQuery.noConflict();
 (function ($) {
 
+    var localStorageKey = 'CodinGame';
+
     /* wait for document ready and elements to modify are loaded */
     $.holdReady(true);
-    delay(isCodinGameLoaded, siteIsReady);
+    if (window.location.pathname == '/games/puzzles') {
+        delay(isCodinGameLoaded, siteIsReady);
+    } else {
+        $.holdReady(false);
+    }
     $(document).ready(function () {
         $('.navigation-link[href="/games"]').on('click', function () {
             delay(isSitePuzzleLoaded, script);
         });
         if (window.location.pathname == '/games/puzzles') {
             delay(isSitePuzzleLoaded, script);
+        }
+        if (window.location.pathname.split('/')[1] == 'report') {
+            delay(canReportLinkBeStored, storeReportLink);
         }
     });
 
@@ -62,6 +75,16 @@ jQuery.noConflict();
 
     /* improve usability */
     function script() {
+
+        /* add last report button */
+        $('.puzzle-name').each(function () {
+            var url = getLocalStorage(localStorageKey).report[$(this).html()];
+            if (url != undefined) {
+                $(this).parent().parent().find('.puzzle-buttons').append('<button type="button" class="puzzle-details-button">MY LAST REPORT</button>').on('click', function () {
+                    window.location.href = url;
+                });
+            }
+        });
 
         var quantityPuzzleToShow = 5;
         var collapseSymbol = '-';
@@ -131,4 +154,37 @@ jQuery.noConflict();
             }
         });
     }
+
+    function canReportLinkBeStored() {
+        if ($('.achievement-name').length > 0) {
+            return true;
+        }
+        return false;
+    }
+
+    function storeReportLink() {
+        var CodinGame = getLocalStorage(localStorageKey);
+        $('.achievement-name').each(function () {
+            var puzzle_name = $(this).html().split('% ');
+            if (puzzle_name.length == 2) {
+                CodinGame.report[puzzle_name[1]] = window.location.href;
+                localStorage.setItem(localStorageKey, JSON.stringify(CodinGame));
+                return false;
+            }
+        });
+    }
+
+    function getLocalStorage(key) {
+        var CodinGame = localStorage.getItem(key);
+        if (CodinGame == null) {
+            CodinGame = {
+                report: {}
+            };
+        }
+        else {
+            CodinGame = JSON.parse(CodinGame);
+        }
+        return CodinGame;
+    }
+
 })(jQuery);
