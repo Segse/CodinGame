@@ -14,6 +14,7 @@
  * @todo better event handling/ register
  * @todo better storage handling
  * @todo storage export/import
+ * @todo % solved puzzle in language in language picker
  */
 
 /* closed namespace */
@@ -114,8 +115,6 @@ jQuery.noConflict();
         });
     }
 })(jQuery);
-
-
 
 
 $(document).ready(function () {
@@ -435,20 +434,79 @@ CodingGameStorage.ReversProxyLib = (function () {
     }
 })();
 
-The difference is that functionOne is defined at run-time, whereas functionTwo is defined at parse-time for a script block. For example:
+var CG = [
+    {},
+    {},
+    {},
+    {
+        name: 'games',
+        language: [
+            '',
+            '',
+            '',
+            'ada',
+            'c',
+            'java',
+            'php'
+        ],
+        puzzle: [
+            {},
+            {},
+            {},
+            {
+                name: 'puzzle1',
+                report: [
+                    {},
+                    {},
+                    {},
+                    {
+                        language: 10,
+                        status: '0',
+                        url: 'asdf'
+                    }
 
-    <script>
-    // Error
-functionOne();
+                ]
+            }
+        ]
+    }
+];
+//sub id nach site
+//report select on change for report
+//    headline for resolved in every language
 
-var functionOne = function() {
-};
-</script>
-
-<script>
-    // No error
-functionTwo();
-
-function functionTwo() {
-}
-</script>
+//The
+//difference
+//is
+//that
+//functionOne
+//is
+//defined
+//at
+//run - time, whereas
+//functionTwo
+//is
+//defined
+//at
+//parse - time
+//for a script
+//block.For
+//example:
+//
+//    <
+//script >
+//    // Error
+//functionOne();
+//
+//var functionOne = function () {
+//};
+//</
+//script >
+//
+//< script >
+//    // No error
+//functionTwo();
+//
+//function functionTwo() {
+//}
+//</
+//script >
