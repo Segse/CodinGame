@@ -115,8 +115,125 @@ jQuery.noConflict();
         });
     }
 })(jQuery);
+#############################################
 
 
+
+
+/* closed namespace */
+jQuery.noConflict();
+(function ($) {
+    /**
+     *
+     * @type {{}|Storage}
+     */
+    var Collection = Collection || {};
+    /**
+     *
+     * @constructor
+     */
+    Collection.Manager = function () {
+        this.funcArr = [];
+        this.addFunc = function (func) {
+            this.funcArr.push(func);
+        };
+        this.initAllFunc = function () {
+            for (var i = 0; i < this.funcArr.length; i++) {
+                if (typeof this.funcArr[i] === 'function') {
+                    this.funcArr[i]();
+                }
+            }
+        }
+    };
+
+    $(document).ready(function () {
+        var Manager = new Collection.Manager();
+        Manager.addFunc(function () {
+            Collection.Feature.CollapseLevel.init();
+        });
+        Manager.addFunc(function () {
+            test();
+        });
+        Manager.initAllFunc();
+    });
+
+    /**
+     *
+     * @type {{set, get, delete, clear, isSupported}}
+     */
+    Collection.Storage.Manager = (function () {
+        return {
+            set: function (key, val) {
+                localStorage.setItem(key, val);
+            },
+            get: function (key) {
+                return localStorage.getItem(key);
+            },
+            delete: function (key) {
+                localStorage.removeIteqm(key);
+            },
+            clear: function () {
+                localStorage.clear();
+            },
+            isSupported: function () {
+                if (typeof (localStorage) !== undefined && localStorage !== null) {
+                    return true;
+                }
+                return false;
+            }
+        }
+    })();
+
+    function test() {
+        alert(123);
+    }
+
+    Collection.Feature.CollapseLevel = (function () {
+
+        function collapse() {
+
+            var collapseSymbol = '-';
+            var expandSymbol = '+';
+            var levelProgessToHide = 100;
+
+            /* foreach level */
+            $('.level').each(function () {
+                var $level = $(this);
+                var $level_header = $level.find('.level-header');
+                var $level_title = $level_header.find('.level-title');
+                var $level_puzzles = $level.find('.level-puzzles');
+                var level_progress = $level.find('.level-progress-value-value').html();
+
+                /* level collapse/expand button */
+                $level_header.css('cursor', 'pointer');
+                $level_title.html(collapseSymbol + ' ' + $level_title.html());
+                $level_header.on('click', function () {
+                    if ($level_title.html().substr(0, collapseSymbol.length) == collapseSymbol) {
+                        $level_title.html($level_title.html().replace(collapseSymbol, expandSymbol));
+                    } else {
+                        $level_title.html($level_title.html().replace(expandSymbol, collapseSymbol));
+                    }
+                    $level_puzzles.slideToggle(slideSpeed);
+                });
+
+                /* collapse solved levels */
+                if (level_progress == levelProgessToHide) {
+                    $level_puzzles.hide();
+                }
+            });
+        }
+
+        return {
+            init: function () {
+                $(document).on('collapseLevel', function () {
+                    collapse();
+                });
+            }
+        }
+    })();
+})(jQuery);
+
+#########################################################
 $(document).ready(function () {
     var revProxyManager = new CodingGameStorage.RevProxyManager("{session_name()}");
     revProxyManager.addInitFuncs(
@@ -132,7 +249,7 @@ $(document).ready(function () {
     revProxyManager.initAllFuncs();
 });
 
-
+###
 var CodingGameStorage = CodingGameStorage || {}; //Namespace
 /**
  *
@@ -203,7 +320,7 @@ CodingGameStorage.RevProxyCartHandler = (function () {
         }
     }
 })();
-
+###
 CodingGameStorage.RevProxyCountrySelectorHandler = (function () {
 
     function getLiveCountrySelector() {
@@ -229,7 +346,7 @@ CodingGameStorage.RevProxyCountrySelectorHandler = (function () {
         }
     }
 })();
-
+###
 /**
  *
  * @param sessionName
@@ -251,7 +368,7 @@ CodingGameStorage.RevProxyManager.prototype = {
         }
     }
 }
-
+###
 var CodingGameStorage = CodingGameStorage || {}; //Namespace
 /**
  * Speicher per localStorage
@@ -285,6 +402,8 @@ CodingGameStorage.LocalStorageStrategy = (function () {
         }
     }
 })();
+##
+
 /**
  * Speicher per sessionCookie
  *
@@ -433,43 +552,57 @@ CodingGameStorage.ReversProxyLib = (function () {
         }
     }
 })();
-
-var CG = [
-    {},
-    {},
-    {},
-    {
-        name: 'games',
-        language: [
-            '',
-            '',
-            '',
-            'ada',
-            'c',
-            'java',
-            'php'
-        ],
-        puzzle: [
-            {},
-            {},
-            {},
-            {
-                name: 'puzzle1',
-                report: [
-                    {},
-                    {},
-                    {},
-                    {
-                        language: 10,
-                        status: '0',
-                        url: 'asdf'
-                    }
-
-                ]
-            }
-        ]
-    }
-];
+#################
+var DataModel = {
+    language: [
+        '',
+        '',
+        '',
+        'ada',
+        'c',
+        'java',
+        'php'
+    ],
+    puzzle: [
+        {},
+        {},
+        {},
+        {
+            name: 'lala',
+            report: [
+                {},
+                {},
+                {},
+                {
+                    language: this.language[10],
+                    status: '0',
+                    url: 'asdf'
+                }
+            ]
+        }
+    ],
+    site: [
+        {},
+        {},
+        {},
+        {
+            name: 'ganes',
+            url: 'lala.la/lala'
+        },
+        {
+            name: 'report',
+            url: 'lala.la/lala'
+        },
+        {
+            name: 'all',
+            url: 'lala.la/lala'
+        },
+        {
+            name: 'ide',
+            url: 'lala.la/lala'
+        },
+    ]
+};
 //sub id nach site
 //report select on change for report
 //    headline for resolved in every language
