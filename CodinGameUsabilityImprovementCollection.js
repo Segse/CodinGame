@@ -20,31 +20,74 @@
 /* closed namespace */
 jQuery.noConflict();
 (function ($) {
-    /* site.ready() */
-    $(window).load(function () {
+
+    var localStorageKey = 'CodinGame';
+
+    /* wait for document ready and elements to modify are loaded */
+    $.holdReady(true);
+    if (window.location.pathname == '/games/puzzles') {
+        delay(isCodinGameLoaded, siteIsReady);
+    } else {
+        $.holdReady(false);
+    }
+    $(document).ready(function () {
         $('.navigation-link[href="/games"]').on('click', function () {
-            runScript();
+            delay(isSitePuzzleLoaded, script);
         });
         if (window.location.pathname == '/games/puzzles') {
-            runScript();
+            delay(isSitePuzzleLoaded, script);
+        }
+        if (window.location.pathname.split('/')[1] == 'report') {
+            delay(canReportLinkBeStored, storeReportLink);
         }
     });
 
-    /* wait for content */
-    function runScript() {
+    /* delay controller */
+    function delay(cond, func) {
         var refreshIntervalId = setInterval(function () {
-            if (
-                window.location.pathname == '/games/puzzles'
-                && $('.content .level').last().find('.puzzle-name').last().html() == 'Mars Lander - Level 3'
-            ) {
+            if (cond()) {
                 clearInterval(refreshIntervalId);
-                script();
+                func();
             }
         }, 100);
     }
 
+    function isCodinGameLoaded() {
+        if (
+            $('.navigation-link[href="/games"] .navigation-item-label').html().length > 0
+            && $('.level').last().find('.puzzle-name').last().html().length > 0
+        ) {
+            return true;
+        }
+        return false;
+    }
+
+    function siteIsReady() {
+        $.holdReady(false);
+    }
+
+    function isSitePuzzleLoaded() {
+        if (
+            window.location.pathname == '/games/puzzles'
+            && $('.level').last().find('.puzzle-name').last().html().length > 0
+        ) {
+            return true;
+        }
+        return false;
+    }
+
     /* improve usability */
     function script() {
+
+        /* add last report button */
+        $('.puzzle-name').each(function () {
+            var url = getLocalStorage(localStorageKey).report[$(this).html()];
+            if (url != undefined) {
+                $(this).parent().parent().find('.puzzle-buttons').append('<button type="button" class="puzzle-details-button">MY LAST REPORT</button>').on('click', function () {
+                    window.location.href = url;
+                });
+            }
+        });
 
         var quantityPuzzleToShow = 5;
         var collapseSymbol = '-';
@@ -114,6 +157,39 @@ jQuery.noConflict();
             }
         });
     }
+
+    function canReportLinkBeStored() {
+        if ($('.achievement-name').length > 0) {
+            return true;
+        }
+        return false;
+    }
+
+    function storeReportLink() {
+        var CodinGame = getLocalStorage(localStorageKey);
+        $('.achievement-name').each(function () {
+            var puzzle_name = $(this).html().split('% ');
+            if (puzzle_name.length == 2) {
+                CodinGame.report[puzzle_name[1]] = window.location.href;
+                localStorage.setItem(localStorageKey, JSON.stringify(CodinGame));
+                return false;
+            }
+        });
+    }
+
+    function getLocalStorage(key) {
+        var CodinGame = localStorage.getItem(key);
+        if (CodinGame == null) {
+            CodinGame = {
+                report: {}
+            };
+        }
+        else {
+            CodinGame = JSON.parse(CodinGame);
+        }
+        return CodinGame;
+    }
+
 })(jQuery);
 #############################################
 
