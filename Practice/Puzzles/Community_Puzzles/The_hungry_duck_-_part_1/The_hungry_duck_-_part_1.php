@@ -38,7 +38,7 @@ class LakeClass
      */
     public function __construct()
     {
-        //rewind(STDIN);
+        rewind(STDIN);
         $this->setLakeArr();
     }
 
